@@ -1,0 +1,13 @@
+*.ipynb
+*.xyz
+*.out
+*.gif
+before_training/
+after_training/
+*__pycache__/
+*.config
+*.sh
+*.ipynb
+cre*
+data/
+sp_dir/
