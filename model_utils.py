@@ -341,13 +341,20 @@ def gen_features(df, monomer_path, monomer_data, monomer_features=False, comp_fe
 
 # A function for training a multitask GP
 
-def train_multitask_GP(training_df, training_data="training_features", target="exp_y", n_iterations = 250):
+def train_multitask_GP(training_df, training_data="training_features", target="exp_y", n_iterations = 250, GPU=False):
 
     train_x = torch.tensor(training_df[training_data].tolist()).float()
     train_y = torch.tensor(training_df[target].tolist()).float()
 
     likelihood = gpytorch.likelihoods.MultitaskGaussianLikelihood(num_tasks = train_y.size()[1]) # initialize the Multitask Gaussian likelihood with as many tasks as elements in each output
     model = MultitaskGPModel(train_x, train_y, likelihood) # intialize Multitask GP model 
+
+    if GPU:
+        print("**Using GPU**")
+        train_x = train_x.cuda()
+        train_y = train_y.cuda()
+        model = model.cuda()
+        likelihood = likelihood.cuda()
 
     model.train()
     likelihood.train()
@@ -374,8 +381,9 @@ def train_multitask_GP(training_df, training_data="training_features", target="e
 
 def predict(model, likelihood, testing_df, 
             training_data="training_features", target="exp_y", 
-            train=False, compare=False, plot=False, interval=20):
-
+            train=False, compare=False, plot=False, interval=20, GPU=False):
+    if GPU:
+        print("**Using GPU**")
     x_data = testing_df[training_data].tolist()
     y_data = testing_df[target].tolist()  
     mean_preds = []
@@ -395,6 +403,8 @@ def predict(model, likelihood, testing_df,
         elif (i+1) == len(x_data):
             print(f"\tlabeling {i+1}/{testing_df.shape[0]}, train: {train}")
         x = torch.tensor([x]).float()
+        if GPU:
+            x = x.cuda()
         pred = likelihood(model(x)) # get hyperparameter predictions
         mean_pred = pred.mean.tolist() # get mean predictions
         mean_preds.append([round(i, 3) for i in mean_pred[0]])

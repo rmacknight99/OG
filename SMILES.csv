@@ -1,0 +1,51 @@
+ID,NAME,SMILES
+1,Diazonium salt,COC1=CC=C(C=C1)[N+]#N.F[B-](F)(F)F
+2,Limonene,CC(=C)C1CCC(=CC1)C
+3,TESCl,CC[Si](Cl)(CC)CC
+4,Umemoto's reagent,[O-][S](=O)(=O)C(F)(F)F.FC(F)(F)[S+]1C2=C(C=CC=C2)C3=CC=CC=C13
+5,4-Nitroaniline,NC1=CC=C(C=C1)[N+]([O-])=O
+6,Salicylaldehyde,OC1=CC=CC=C1C=O
+7,"N,N-Dimethylaniline",CN(C)C1=CC=CC=C1
+8,Diethyl cyanomethylphosphonate,CCO[P](=O)(CC#N)OCC
+9,p-tolyl isocyanate,CC1=CC=C(C=C1)N=C=O
+10,Cinnamaldehyde,O=C\C=C\C1=CC=CC=C1
+11,1-Naphthol,OC1=C2C=CC=CC2=CC=C1
+12,2-Bromopropene,CC(Br)=C
+13,Methyl acrylate,COC(=O)C=C
+14,m-Cresol,CC1=CC(=CC=C1)O
+15,Pentafluorobenzaldehyde,Fc1c(F)c(F)c(C=O)c(F)c1F
+16,Dimethyl3-methylglutaconate,COC(C/C(C)=C/C(OC)=O)=O
+17,Select fluor,F[B-](F)(F)F.F[B-](F)(F)F.F[N+]12CC[N+](CCl)(CC1)CC2
+18,Ethyl bromoacetate,CCOC(=O)CBr
+19,4-Pyridinecarboxaldehyde,O=CC1=CC=NC=C1
+20,Iodo-benzene,IC1=CC=CC=C1
+21,Bis(trimethylsilyl)acetamide,C[Si](C)(C)C(C(N)=O)[Si](C)(C)C
+22,Iodobenzene diacetate,CC(=O)O[I](OC(C)=O)C1=CC=CC=C1
+23,"4,4,4-trifluoro-1-phenyl-1,3-butanedione",FC(F)(F)C(=O)CC(=O)c1ccccc1
+24,Hexamethyldisilazane,C[Si](C)(C)N[Si](C)(C)C
+25,5-Hexyn-1-ol,OCCCCC#C
+26,Citric acid,OC(=O)CC(O)(CC(O)=O)C(O)=O
+27,Dibromomethane,BrCBr
+28,NBS,BrN1C(=O)CCC1=O
+29,4-Hydroxybenzoic acid,OC(=O)C1=CC=C(O)C=C1
+30,Diisopropyl L-tartrate,CC(C)OC(=O)C(O)C(O)C(=O)OC(C)C
+31,Ethanolamine,NCCO
+32,"3,5-Dimethyl pyrazole",CC1=CC(=N[NH]1)C
+33,"Trifluoro-2,4-pentanedione",CC(=O)CC(=O)C(F)(F)F
+34,"2-Butene-1,4-diol",OC\C=C\CO
+35,"N,N-Bis-(Salicylidine)-Ethylenediamine",OC1=C(C=CC=C1)C=NCCN=CC2=C(O)C=CC=C2
+36,Pyridine,c1ccncc1
+37,4-nitrophthalonitrile,[O-][N+](=O)C1=CC=C(C#N)C(=C1)C#N
+38,Diisopropylamine,CC(C)NC(C)C
+39,Trimethyl phosphate,CO[P](=O)(OC)OC
+40,L-Glutamic Acid,NC(CCC(O)=O)C(O)=O
+41,Triphenylphosphine,C1=CC=C(C=C1)P(C2=CC=CC=C2)C3=CC=CC=C3
+42,Perchloroethylene,ClC(Cl)=C(Cl)Cl
+43,Carvone,CC(=C)C1CC=C(C)C(=O)C1
+44,"1,4-Diazabicyclo [2.2.2] octane",C1CN2CCN1CC2
+45,1-(Trimethylsilyl)imidazole,C[Si](C)(C)[N]1C=CN=C1
+46,Carvacrol,CC(C)C1=CC(=C(C)C=C1)O
+47,L-Phenylalanine,NC(CC1=CC=CC=C1)C(O)=O
+48,"1,5-dihydroxynaphthalene",OC1=CC=CC2=C(O)C=CC=C12
+49,4-nitrobenzaldehyde,[O-][N+](=O)C1=CC=C(C=O)C=C1
+50,phenylacetylene,C#CC1=CC=CC=C1
