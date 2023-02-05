@@ -350,7 +350,7 @@ def train_multitask_GP(training_df, training_data="training_features", target="e
     model = MultitaskGPModel(train_x, train_y, likelihood) # intialize Multitask GP model 
 
     if GPU:
-        print("**Using GPU**")
+        print("\n  **Using GPU**")
         train_x = train_x.cuda()
         train_y = train_y.cuda()
         model = model.cuda()
@@ -390,7 +390,7 @@ def predict(model, likelihood, testing_df,
         state_dict = torch.load(load)
         model.load_state_dict(state_dict)
     if GPU:
-        print("**Using GPU**")
+        print("\n  **Using GPU**")
     x_data = testing_df[training_data].tolist()
     y_data = testing_df[target].tolist()  
     mean_preds = []
@@ -405,6 +405,7 @@ def predict(model, likelihood, testing_df,
         MAEs = []
 
     for i, x in enumerate(x_data):
+        torch.cuda.memory_summary(device=None, abbreviated=False)
         if i == 0 or i % interval == 0:
             print(f"\tlabeling {i+1}/{testing_df.shape[0]}, train: {train}")
         elif (i+1) == len(x_data):
@@ -412,7 +413,10 @@ def predict(model, likelihood, testing_df,
         x = torch.tensor([x]).float()
         if GPU:
             x = x.cuda()
-        pred = likelihood(model(x)) # get hyperparameter predictions
+        with torch.no_grad(), gpytorch.settings.fast_pred_var():
+            torch.cuda.empty_cache()
+            pred = likelihood(model(x)) # get hyperparameter predictions
+            # Get the variance? How could we use this?
         mean_pred = pred.mean.tolist() # get mean predictions
         mean_preds.append([round(i, 3) for i in mean_pred[0]])
         if compare:
