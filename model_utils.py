@@ -341,7 +341,7 @@ def gen_features(df, monomer_path, monomer_data, monomer_features=False, comp_fe
 
 # A function for training a multitask GP
 
-def train_multitask_GP(training_df, training_data="training_features", target="exp_y", n_iterations = 250, GPU=False):
+def train_multitask_GP(training_df, training_data="training_features", target="exp_y", n_iterations = 250, GPU=False, train=True):
 
     train_x = torch.tensor(training_df[training_data].tolist()).float()
     train_y = torch.tensor(training_df[target].tolist()).float()
@@ -361,16 +361,19 @@ def train_multitask_GP(training_df, training_data="training_features", target="e
 
     optimizer = torch.optim.Adam(model.parameters(), lr=0.1) # adam optimizer
     mll = gpytorch.mlls.ExactMarginalLogLikelihood(likelihood, model) # Marginal Log Likelihood loss
-
-    for i in range(n_iterations): # for a number of training iterations
-        optimizer.zero_grad() # zero all tensor gradients
-        output = model(train_x) # compute output of model on training data
-        loss = -mll(output, train_y) # compute loss
-        loss.backward() # back prop pgradients
-        if (i+1) % 50 == 0 or (i+1) == n_iterations:
-            print(f"Training iteration {i+1}/{n_iterations} ---> "+" loss: {:.3f}".format(loss)) 
-        optimizer.step() # step with optimizer
-    print("\nFinal Loss: {:.3f}".format(loss))
+    if train:
+        print("\n----- Training Model -----\n")
+        for i in range(n_iterations): # for a number of training iterations
+            optimizer.zero_grad() # zero all tensor gradients
+            output = model(train_x) # compute output of model on training data
+            loss = -mll(output, train_y) # compute loss
+            loss.backward() # back prop pgradients
+            if (i+1) % 50 == 0 or (i+1) == n_iterations:
+                print(f"\tTraining iteration {i+1}/{n_iterations} ---> "+" loss: {:.3f}".format(loss)) 
+            optimizer.step() # step with optimizer
+        print("\nFinal Loss: {:.3f}".format(loss))
+    else:
+        print("\n----- Initializing and returning model and likelihood -----\n")
 
     model.eval() # turn model into evaluation mode
     likelihood.eval() # turn likeihood into evaluation mode
@@ -381,7 +384,11 @@ def train_multitask_GP(training_df, training_data="training_features", target="e
 
 def predict(model, likelihood, testing_df, 
             training_data="training_features", target="exp_y", 
-            train=False, compare=False, plot=False, interval=20, GPU=False):
+            train=False, compare=False, plot=False, interval=20, GPU=False, load=None):
+    
+    if load is not None:
+        state_dict = torch.load(load)
+        model.load_state_dict(state_dict)
     if GPU:
         print("**Using GPU**")
     x_data = testing_df[training_data].tolist()
