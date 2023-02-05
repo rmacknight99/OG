@@ -405,7 +405,6 @@ def predict(model, likelihood, testing_df,
         MAEs = []
 
     for i, x in enumerate(x_data):
-        torch.cuda.memory_summary(device=None, abbreviated=False)
         if i == 0 or i % interval == 0:
             print(f"\tlabeling {i+1}/{testing_df.shape[0]}, train: {train}")
         elif (i+1) == len(x_data):
@@ -414,7 +413,7 @@ def predict(model, likelihood, testing_df,
         if GPU:
             x = x.cuda()
         with torch.no_grad(), gpytorch.settings.fast_pred_var():
-            torch.cuda.empty_cache()
+#            torch.cuda.empty_cache()
             pred = likelihood(model(x)) # get hyperparameter predictions
             # Get the variance? How could we use this?
         mean_pred = pred.mean.tolist() # get mean predictions
