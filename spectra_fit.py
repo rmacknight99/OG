@@ -1,7 +1,7 @@
 from model_utils import *
 from morfeus_utils import *
+import sys
 
-torch.set_num_threads(int(os.cpu_count()))
 # initialize the conformer tracker
 monomers = np.arange(50)+1
 combs = []
@@ -12,7 +12,7 @@ conf_tracker = dict(("_".join(map(str, el)), {"exp_file": "", "comp_file": []}) 
 # identify matches with experimental data
 matches, conf_tracker = identify_matches(conf_tracker=conf_tracker)
 avg_confs = np.mean(np.array([len(conf_tracker[key]) for key in list(conf_tracker.keys())]))
-print(f"on average each complex has {round(avg_confs, 3)} conformers")
+print(f"on average each complex has {round(avg_confs, 3)} conformers", flush=True)
 
 ##### PREDICTING DIMER COMPUTATIONAL SPECTRUM FROM MONOMER SPECTRA AND FINGERPRINTS #####
 
@@ -36,7 +36,7 @@ feature_size = len(training["training_features"].tolist()[0])
 training, testing = shrink_spectrum(training, cut=1), shrink_spectrum(testing, cut=1)
 target_size = len(training["comp_y"].tolist()[0])
 
-print(f"\n  training examples: {training.shape[0]}\n  testing examples: {testing.shape[0]}\n  feature size: {feature_size}\n  target size: {target_size}")
+print(f"\n  training examples: {training.shape[0]}\n  testing examples: {testing.shape[0]}\n  feature size: {feature_size}\n  target size: {target_size}", flush=True)
 
 # train a multitask GP to predict COMPUTATIONAL DIMER SPECTRUM from features
 GPU = torch.cuda.is_available()
@@ -51,12 +51,11 @@ if train:
 
 # Run prediction and replace COMP spectra with prediction from MODEL
 comp_model 
-mean_train_preds, training = predict(comp_model, comp_likelihood, training, target="comp_y", train=True, interval=100, GPU=GPU, load="comp_model.pth")
+mean_train_preds, training = predict(comp_model, comp_likelihood, training, target="comp_y", train=True, interval=50, GPU=GPU, load="comp_model.pth")
 mean_test_preds, testing = predict(comp_model, comp_likelihood, testing, target="comp_y", interval=50, GPU=GPU, load="comp_model.pth")
 
 training["comp_y"] = mean_train_preds
 testing["comp_y"] = mean_test_preds
-
 
 # Rejoin training and testing DataFrames 
 exp_samples = pd.concat([training, testing]).dropna()
@@ -73,7 +72,7 @@ testing = gen_features(testing, "comp_spectral_data/excited_state_monomer_spectr
 feature_size = len(training["training_features"].tolist()[0])
 target_size = len(training["exp_y"].tolist()[0])
 
-print(f"training examples: {training.shape[0]}\ntesting examples: {testing.shape[0]}\nfeature size: {feature_size}\ntarget size: {target_size}")
+print(f"training examples: {training.shape[0]}\ntesting examples: {testing.shape[0]}\nfeature size: {feature_size}\ntarget size: {target_size}", flush=True)
 
 ##### predicting EXPERIMENTAL DIMER SPECTRUM from PREDICTED COMP SPECTRA, MONOMER SPECTRA, and FPs #####
 GPU = torch.cuda.is_available()

@@ -52,7 +52,7 @@ def identify_matches(single_path="comp_spectral_data/single_conf_dimer_spectra_c
         elif value["exp_file"] == "" or len(value["comp_file"]) == 0:
             keys_to_remove.append(key)
     #[conf_tracker.pop(key) for key in keys_to_remove]
-    print(f"{len(matches)} matching comp and exp spectra")
+    print(f"{len(matches)} matching comp and exp spectra", flush=True)
     
     return matches, conf_tracker
 
@@ -180,7 +180,7 @@ def compare(conf_tracker={}, boltz_weight=False):
     keys_to_remove = []
     data_dict = {"comp_file": [], "exp_file": [], "MAE_before": [], "R2_before": [], "WL": [], "comp_y": [], "exp_y": []}
     for complex, information in conf_tracker.items():
-        print(f"\tWorking on {complex}...")
+        print(f"\tWorking on {complex}...", flush=True)
         try:
             comp_file = information["comp_file"]
         except:
@@ -189,11 +189,11 @@ def compare(conf_tracker={}, boltz_weight=False):
             data_dict["comp_file"].append(comp_file)
             if len(comp_file) > 1:
                 if boltz_weight:
-                    print("\t\tBoltzmann weighting the spectral data spectrum ...")
+                    print("\t\tBoltzmann weighting the spectral data spectrum ...", flush=True)
                     ensemble = load_ensemble('_'.join(comp_file[0].split("/")[-1].split("_")[:2])+"_")
                     _ = gen_crest(ensemble)
                     weights = get_boltz_weights(".")
-                    print(f"\t\t\tweights = {', '.join([str(round(w, 2)) for w in weights])}")
+                    print(f"\t\t\tweights = {', '.join([str(round(w, 2)) for w in weights])}", flush=True)
                     WL, FR = boltzmann_weight_spectrum(comp_file, weights=weights)
                 else:
                     WL, FR = boltzmann_weight_spectrum(comp_file)
@@ -306,7 +306,7 @@ def gen_features(df, monomer_path, monomer_data, monomer_features=False, comp_fe
         feats = []
 
         if comp_features:
-            d_features = row["comp_y"].tolist()
+            d_features = row["comp_y"]
             feats.extend(d_features)
 
         if monomer_features:
@@ -350,7 +350,7 @@ def train_multitask_GP(training_df, training_data="training_features", target="e
     model = MultitaskGPModel(train_x, train_y, likelihood) # intialize Multitask GP model 
 
     if GPU:
-        print("\n  **Using GPU**")
+        print("\n  **Using GPU**", flush=True)
         train_x = train_x.cuda()
         train_y = train_y.cuda()
         model = model.cuda()
@@ -362,18 +362,18 @@ def train_multitask_GP(training_df, training_data="training_features", target="e
     optimizer = torch.optim.Adam(model.parameters(), lr=0.1) # adam optimizer
     mll = gpytorch.mlls.ExactMarginalLogLikelihood(likelihood, model) # Marginal Log Likelihood loss
     if train:
-        print("\n----- Training Model -----\n")
+        print("\n----- Training Model -----\n", flush=True)
         for i in range(n_iterations): # for a number of training iterations
             optimizer.zero_grad() # zero all tensor gradients
             output = model(train_x) # compute output of model on training data
             loss = -mll(output, train_y) # compute loss
             loss.backward() # back prop pgradients
             if (i+1) % 50 == 0 or (i+1) == n_iterations:
-                print(f"\tTraining iteration {i+1}/{n_iterations} ---> "+" loss: {:.3f}".format(loss)) 
+                print(f"\tTraining iteration {i+1}/{n_iterations} ---> "+" loss: {:.3f}".format(loss), flush=True) 
             optimizer.step() # step with optimizer
-        print("\nFinal Loss: {:.3f}".format(loss))
+        print("\nFinal Loss: {:.3f}".format(loss), flush=True)
     else:
-        print("\n----- Initializing and returning model and likelihood -----\n")
+        print("\n----- Initializing and returning model and likelihood -----\n", flush=True)
 
     model.eval() # turn model into evaluation mode
     likelihood.eval() # turn likeihood into evaluation mode
@@ -394,7 +394,7 @@ def predict(model, likelihood, testing_df,
     x_data = testing_df[training_data].tolist()
     y_data = testing_df[target].tolist()  
     mean_preds = []
-    print("\n----- Running Predictions -----\n")
+    print("----- Running Predictions -----\n")
     if plot:
         WL = testing_df["WL"].tolist()[0]
         files = [i[0].split("/")[-1] for i in testing_df["comp_file"].tolist()]
@@ -406,15 +406,14 @@ def predict(model, likelihood, testing_df,
 
     for i, x in enumerate(x_data):
         if i == 0 or i % interval == 0:
-            print(f"\tlabeling {i+1}/{testing_df.shape[0]}, train: {train}")
+            print(f"\tlabeling {i+1}/{testing_df.shape[0]}, train: {train}", flush=True)
         elif (i+1) == len(x_data):
-            print(f"\tlabeling {i+1}/{testing_df.shape[0]}, train: {train}")
+            print(f"\tlabeling {i+1}/{testing_df.shape[0]}, train: {train}", flush=True)
         x = torch.tensor([x]).float()
         if GPU:
             x = x.cuda()
-        with torch.no_grad(), gpytorch.settings.fast_pred_var():
-#            torch.cuda.empty_cache()
-            pred = likelihood(model(x)) # get hyperparameter predictions
+        torch.cuda.empty_cache()
+        pred = likelihood(model(x)) # get hyperparameter predictions
             # Get the variance? How could we use this?
         mean_pred = pred.mean.tolist() # get mean predictions
         mean_preds.append([round(i, 3) for i in mean_pred[0]])
